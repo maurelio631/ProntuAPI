@@ -3,16 +3,20 @@ import { v4 as uuidv4 } from "uuid";
 
 let users = [];
 
-export const getUsers = (req, res) => {
+export const getUsers = async (req, res) => {
   console.log(users);
-
-  res.send(users);
+  try {
+    res.send(users);
+  } catch(err) {
+    return res.status(404).send({err:"User not found"})
+  }
 };
 
 export const createUser = (req, res) => {
   try {
     const user = req.body;
     users.push({ ...user, id: uuidv4() });
+    user.password = undefined;
     res.send(`User ${user.name} added successfully`);
   } catch (err) {
     return res.status(400).send({ error: "Registration failed" });
@@ -35,19 +39,19 @@ export const deleteUser = (req, res) => {
 
 export const updateUser = (req, res) => {
   const { id } = req.params;
-  const { name, phone, email, employeeType} = req.body;
+  const { name, phone, email, employeeType } = req.body;
   const user = users.find((user) => user.id == id);
 
   if (name) {
     user.name = name;
   }
-  if (phone){
+  if (phone) {
     user.phone = phone;
   }
   if (email) {
     user.email = email;
   }
-  if (employeeType){
+  if (employeeType) {
     user.employeeType = employeeType;
   }
   res.send(`User with the id ${id} has been updated`);
